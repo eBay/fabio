@@ -17,10 +17,13 @@ import (
 
 	"github.com/fabiolb/fabio/config"
 	"github.com/fabiolb/fabio/exit"
+	"github.com/fabiolb/fabio/metrics/circonus"
+	"github.com/fabiolb/fabio/metrics/gometrics"
+	"github.com/fabiolb/fabio/metrics/noop"
+	"github.com/fabiolb/fabio/metrics/statsdraw"
 )
 
-// DefaultRegistry stores the metrics library provider.
-var DefaultRegistry Registry = NoopRegistry{}
+var M Registry = &noop.Registry{}
 
 // DefaultNames contains the default template for route metric names.
 const DefaultNames = "{{clean .Service}}.{{clean .Host}}.{{clean .Path}}.{{clean .TargetURL.Host}}"
@@ -56,18 +59,22 @@ func NewRegistry(cfg config.Metrics) (r Registry, err error) {
 	switch cfg.Target {
 	case "stdout":
 		log.Printf("[INFO] Sending metrics to stdout")
-		return gmStdoutRegistry(cfg.Interval)
+		return gometrics.NewStdoutRegistry(cfg.Interval)
 
 	case "graphite":
 		log.Printf("[INFO] Sending metrics to Graphite on %s as %q", cfg.GraphiteAddr, prefix)
-		return gmGraphiteRegistry(prefix, cfg.GraphiteAddr, cfg.Interval)
+		return gometrics.NewGraphiteRegistry(prefix, cfg.GraphiteAddr, cfg.Interval)
 
 	case "statsd":
 		log.Printf("[INFO] Sending metrics to StatsD on %s as %q", cfg.StatsDAddr, prefix)
-		return gmStatsDRegistry(prefix, cfg.StatsDAddr, cfg.Interval)
+		return gometrics.NewStatsDRegistry(prefix, cfg.StatsDAddr, cfg.Interval)
+
+	case "statsd_raw":
+		log.Printf("[INFO] Sending metrics to StatsD (raw) on %s as %q", cfg.StatsDAddr, prefix)
+		return statsdraw.NewRegistry(prefix, cfg.StatsDAddr, cfg.Interval)
 
 	case "circonus":
-		return circonusRegistry(prefix, cfg.Circonus, cfg.Interval)
+		return circonus.NewRegistry(prefix, cfg.Circonus, cfg.Interval)
 
 	default:
 		exit.Fatal("[FATAL] Invalid metrics target ", cfg.Target)
