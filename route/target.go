@@ -1,11 +1,10 @@
 package route
 
 import (
-	"net/url"
-	"strings"
-
 	"github.com/fabiolb/fabio/metrics4"
 	"github.com/fabiolb/fabio/metrics4/names"
+	"net/url"
+	"strings"
 )
 
 type Target struct {
@@ -50,6 +49,7 @@ type Target struct {
 	// Weight is the actual weight for this service in percent.
 	Weight float64
 
+	// TODO(max): Isn't it the same as Requests timer in HTTPProxy
 	// Timer measures throughput and latency of this target
 	Timer metrics4.Timer
 

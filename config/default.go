@@ -26,11 +26,18 @@ var defaultConfig = &Config{
 		Level:        "INFO",
 	},
 	Metrics: Metrics{
-		Prefix:   "{{clean .Hostname}}.{{clean .Exec}}",
-		Names:    "{{clean .Service}}.{{clean .Host}}.{{clean .Path}}.{{clean .TargetURL.Host}}",
+		//Prefix:   "{{clean .Hostname}}.{{clean .Exec}}",
+		//Names:    "{{clean .Service}}.{{clean .Host}}.{{clean .Path}}.{{clean .TargetURL.Host}}",
 		Interval: 30 * time.Second,
-		Timeout:  10 * time.Second,
-		Retry:    500 * time.Millisecond,
+		//Timeout:  10 * time.Second,
+		//Retry:    500 * time.Millisecond,
+		Prometheus: Prometheus{
+			MetricsEndpoint: "/metrics/prometheus",
+		},
+		StatsD: StatsD{
+			SampleRate: 1,
+		},
+		Graphite: Graphite{},
 		Circonus: Circonus{
 			APIApp: "fabio",
 		},

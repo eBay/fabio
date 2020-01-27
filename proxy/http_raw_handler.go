@@ -1,13 +1,12 @@
 package proxy
 
 import (
+	"github.com/fabiolb/fabio/metrics4"
 	"io"
 	"log"
 	"net"
 	"net/http"
 	"sync/atomic"
-
-	"github.com/fabiolb/fabio/metrics4"
 )
 
 // conns keeps track of the number of open ws connections
@@ -21,9 +20,9 @@ type dialFunc func(network, address string) (net.Conn, error)
 func newRawProxy(host string, dial dialFunc, conn metrics4.Gauge) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if conn != nil {
-			conn.Update(int(atomic.AddInt64(&conns, 1)))
+			conn.Set(float64(atomic.AddInt64(&conns, 1)))
 			defer func() {
-				conn.Update(int(atomic.AddInt64(&conns, -1)))
+				conn.Set(float64(atomic.AddInt64(&conns, -1)))
 			}()
 		}
 

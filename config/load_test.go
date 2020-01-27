@@ -647,13 +647,6 @@ func TestLoad(t *testing.T) {
 			},
 		},
 		{
-			args: []string{"-metrics.names", "some names"},
-			cfg: func(cfg *Config) *Config {
-				cfg.Metrics.Names = "some names"
-				return cfg
-			},
-		},
-		{
 			args: []string{"-metrics.interval", "5ms"},
 			cfg: func(cfg *Config) *Config {
 				cfg.Metrics.Interval = 5 * time.Millisecond
